@@ -15,6 +15,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import keyBy from 'lodash.keyby';
+import { Pagination } from 'carbon-components-react';
 import {
   DeleteModal,
   StatusFilterDropdown,
@@ -63,6 +64,9 @@ function TaskRuns({ intl }) {
   const [toBeDeleted, setToBeDeleted] = useState([]);
   const [cancelSelection, setCancelSelection] = useState(null);
 
+  const [pageSize, setPageSize] = useState(100);
+  const [page, setPage] = useState(1); // pagination component counts from 1
+
   const isReadOnly = useIsReadOnly();
 
   const filters = getFilters(location);
@@ -81,6 +85,13 @@ function TaskRuns({ intl }) {
   const setStatusFilter = getStatusFilterHandler({ history, location });
 
   useTitleSync({ page: 'TaskRuns' });
+
+  useEffect(() => {
+    const savedPageSize = localStorage.getItem('tkn-page-size');
+    if (savedPageSize) {
+      setPageSize(parseInt(savedPageSize, 10));
+    }
+  }, []);
 
   useEffect(() => {
     setDeleteError(null);
@@ -311,9 +322,11 @@ function TaskRuns({ intl }) {
         filters={statusFilters}
         loading={isLoading}
         selectedNamespace={namespace}
-        taskRuns={taskRuns.filter(run => {
-          return runMatchesStatusFilter({ run, statusFilter });
-        })}
+        taskRuns={taskRuns
+          .filter(run => {
+            return runMatchesStatusFilter({ run, statusFilter });
+          })
+          .slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize)}
         taskRunActions={taskRunActions()}
         toolbarButtons={toolbarButtons}
       />
@@ -326,6 +339,22 @@ function TaskRuns({ intl }) {
           showNamespace={namespace === ALL_NAMESPACES}
         />
       ) : null}
+      {taskRuns.length > 10 && (
+        <Pagination
+          page={page}
+          totalItems={taskRuns.length}
+          backwardText="Previous page"
+          forwardText="Next page"
+          pageSize={pageSize}
+          pageSizes={[10, 25, 50, 100]}
+          itemsPerPageText="Items per page:"
+          onChange={({ page: newPage, pageSize: newPageSize }) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+            localStorage.setItem('tkn-page-size', newPageSize);
+          }}
+        />
+      )}
     </ListPageLayout>
   );
 }
