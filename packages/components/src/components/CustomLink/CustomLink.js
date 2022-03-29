@@ -13,28 +13,25 @@ limitations under the License.
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import jsYaml from 'js-yaml';
 import classNames from 'classnames';
-import { Link as CarbonLink } from 'carbon-components-react';
+import { Link as CarbonLink, Row, Column } from 'carbon-components-react';
 
-const linkAnnotationPrefix = 'furiosa.ai.tekton.dev.link/';
+const predefinedParams = ['logs', 'pod-resource-usage'];
 
-function Links({ resource, className }) {
-  if (!('metadata' in resource) || !('annotations' in resource['metadata'])) {
-    return null;
-  }
+function Links({ params }) {
+  const links = params.filter(({ name, value }) => predefinedParams.includes(name));
 
-  const keys = resources['metadata']['annotations'].keys().filter(key => {
-    return key.startsWith(linkAnnotationPrefix);
-  });
-
-  return keys.map(key => {
-    const title = key.substring(linkAnnotationPrefix.length);
-    const link = resources['metadata']['annotations'][key];
+  return links.map(({ name, value }) => {
     return (
-      <div className={className}>
-        <CarbonLink href={link}>{title}</CarbonLink>
-      </div>
+      <>
+        <Column sm={3} md={3} lg={3}>{name}:</Column>
+        <Column sm={9} md={9} lg={9}>
+          <CarbonLink href={value} target="_blank">{value}</CarbonLink>
+        </Column>
+        <Column sm={16} md={16} lg={16}>
+          <br />
+        </Column>
+      </>
     );
   });
 }
@@ -42,37 +39,27 @@ function Links({ resource, className }) {
 function CustomLink({
   className,
   dark,
-  resource,
+  params,
   title
 }) {
   const clz = classNames('bx--snippet--multi', className, {
     'tkn--view-yaml--dark': dark
   });
-  let customLinkComponent;
-  if (enableSyntaxHighlighting && typeof resource !== 'string') {
-    customLinkComponent = <Links className={clz} resource={resource} />;
-  } else {
-    const yaml = jsYaml.dump(resource);
-    customLinkComponent = <Links className={clz} resource={resource} />;
-  }
-
   return (
-    <>
-      {customLinkComponent}
-    </>
+    <div className={clz}>
+      <Row>
+        <Links params={params} />
+      </Row>
+    </div>
   );
 }
 
 CustomLink.propTypes = {
-  resource: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.shape({}),
-    PropTypes.string
-  ]).isRequired,
+  params: PropTypes.array,
 };
 
 CustomLink.defaultProps = {
-  resource: {},
+  params: [],
 };
 
 export default CustomLink;

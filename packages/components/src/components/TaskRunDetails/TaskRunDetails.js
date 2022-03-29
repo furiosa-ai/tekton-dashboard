@@ -312,13 +312,11 @@ const TaskRunDetails = ({
             </div>
           </Tab>
         )}
-        {pod && (
-          <Tab id={`${displayName}-custom-link`} label="CustomLink">
-            <div className="tkn--step-status">
-              <CustomLink dark resource={pod.resource} />
-            </div>
-          </Tab>
-        )}
+        <Tab id={`${displayName}-custom-link`} label="CustomLink">
+          <div className="tkn--step-status">
+            <CustomLink dark params={params} />
+          </div>
+        </Tab>
       </Tabs>
     </div>
   );
