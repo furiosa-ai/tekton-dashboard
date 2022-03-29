@@ -34,7 +34,8 @@ import {
   Tab,
   Table,
   Tabs,
-  ViewYAML
+  ViewYAML,
+  CustomLink
 } from '..';
 
 function getDescriptions(array = []) {
@@ -201,7 +202,8 @@ const TaskRunDetails = ({
     resultsTable && 'results',
     resources && 'resources',
     'status',
-    pod && 'pod'
+    pod && 'pod',
+    pod && 'custom-link'
   ].filter(Boolean);
 
   let selectedTabIndex = tabs.indexOf(view);
@@ -307,6 +309,13 @@ const TaskRunDetails = ({
               {hasEvents && podContent === 'events' ? (
                 <ViewYAML dark enableSyntaxHighlighting resource={pod.events} />
               ) : null}
+            </div>
+          </Tab>
+        )}
+        {pod && (
+          <Tab id={`${displayName}-custom-link`} label="CustomLink">
+            <div className="tkn--step-status">
+              <CustomLink dark resource={pod.resource} />
             </div>
           </Tab>
         )}
