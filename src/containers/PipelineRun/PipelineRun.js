@@ -26,6 +26,7 @@ import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 
 import {
+  cancelPipelineRun,
   rerunPipelineRun,
   startPipelineRun,
   useClusterTasks,
@@ -255,18 +256,32 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
   if (!isReadOnly) {
     if (pipelineRun.spec.status !== pipelineRunStatuses.PENDING) {
       runAction = (
-        <RunAction
-          action="rerun"
-          getURL={({ name, namespace: resourceNamespace }) =>
-            urls.pipelineRuns.byName({
-              namespace: resourceNamespace,
-              pipelineRunName: name
-            })
-          }
-          run={pipelineRun}
-          runaction={rerunPipelineRun}
-          showNotification={value => setShowRunActionNotification(value)}
-        />
+        <>
+          <RunAction
+            action="stop"
+            getURL={({ name, namespace: resourceNamespace }) =>
+              urls.pipelineRuns.byName({
+                namespace: resourceNamespace,
+                pipelineRunName: name
+              })
+            }
+            run={pipelineRun}
+            runaction={cancelPipelineRun}
+            showNotification={value => setShowRunActionNotification(value)}
+          />
+          <RunAction
+            action="rerun"
+            getURL={({ name, namespace: resourceNamespace }) =>
+              urls.pipelineRuns.byName({
+                namespace: resourceNamespace,
+                pipelineRunName: name
+              })
+            }
+            run={pipelineRun}
+            runaction={rerunPipelineRun}
+            showNotification={value => setShowRunActionNotification(value)}
+          />
+        </>
       );
     } else {
       runAction = (
