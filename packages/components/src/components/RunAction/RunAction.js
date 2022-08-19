@@ -16,7 +16,8 @@ import { injectIntl } from 'react-intl';
 import { Button } from 'carbon-components-react';
 import {
   PlayOutline32 as Play,
-  Restart32 as Restart
+  Restart32 as Restart,
+  StopOutline32 as Stop
 } from '@carbon/icons-react';
 
 class RunAction extends Component {
@@ -27,6 +28,12 @@ class RunAction extends Component {
     const { namespace } = run.metadata;
     let triggerMsg = null;
     switch (action) {
+      case 'stop':
+        triggerMsg = intl.formatMessage({
+          id: 'dashboard.stop.triggered',
+          defaultMessage: 'Triggered stop'
+        });
+        break;
       case 'rerun':
         triggerMsg = intl.formatMessage({
           id: 'dashboard.rerun.triggered',
@@ -61,6 +68,20 @@ class RunAction extends Component {
       .catch(error => {
         let msg = null;
         switch (action) {
+          case 'stop':
+            msg = intl.formatMessage(
+              {
+                id: 'dashboard.stop.error',
+                defaultMessage:
+                  'An error occurred when stopping {runName}: check the dashboard logs for details. Status code: {statusCode}'
+              },
+              {
+                action,
+                runName: run.metadata.name,
+                statusCode: error.response.status
+              }
+            );
+            break;
           case 'rerun':
             msg = intl.formatMessage(
               {
@@ -105,6 +126,13 @@ class RunAction extends Component {
     let icon = null;
     let msg = '';
     switch (action) {
+      case 'stop':
+        icon = Stop;
+        msg = intl.formatMessage({
+          id: 'dashboard.stop.button',
+          defaultMessage: 'Stop'
+        });
+        break;
       case 'rerun':
         icon = Restart;
         msg = intl.formatMessage({
