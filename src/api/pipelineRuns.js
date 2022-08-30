@@ -156,3 +156,8 @@ export function startPipelineRun(pipelineRun) {
   const uri = getTektonAPI('pipelineruns', { name, namespace });
   return patch(uri, payload);
 }
+
+export function stopPipelineRun(pipelineRun) {
+  const { name, namespace } = pipelineRun.metadata;
+  return cancelPipelineRun({ name, namespace });
+}
