@@ -26,9 +26,9 @@ import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 
 import {
-  cancelPipelineRun,
   rerunPipelineRun,
   startPipelineRun,
+  stopPipelineRun,
   useClusterTasks,
   useEvents,
   useExternalLogsURL,
@@ -256,7 +256,7 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
   if (!isReadOnly) {
     if (pipelineRun.spec.status !== pipelineRunStatuses.PENDING) {
       runAction = (
-        <div className='tkn--action-btns'>
+        <div className="tkn--action-btns">
           <RunAction
             action="stop"
             getURL={({ name, namespace: resourceNamespace }) =>
@@ -266,7 +266,7 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
               })
             }
             run={pipelineRun}
-            runaction={cancelPipelineRun}
+            runaction={stopPipelineRun}
             showNotification={value => setShowRunActionNotification(value)}
           />
           <RunAction
