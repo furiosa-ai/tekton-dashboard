@@ -122,7 +122,7 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
         metadata.labels &&
         ((metadata.labels[labelConstants.CONDITION_CHECK] &&
           metadata.labels[labelConstants.CONDITION_CHECK] ===
-            pipelineTaskName) ||
+          pipelineTaskName) ||
           // the `pipelineTask` label is present on both TaskRuns (the owning
           // TaskRun and the TaskRun created for the condition check), ensure
           // we only match on the owning TaskRun here and not another condition
@@ -256,7 +256,7 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
   if (!isReadOnly) {
     if (pipelineRun.spec.status !== pipelineRunStatuses.PENDING) {
       runAction = (
-        <>
+        <div className='tkn--action-btns'>
           <RunAction
             action="stop"
             getURL={({ name, namespace: resourceNamespace }) =>
@@ -281,7 +281,7 @@ export /* istanbul ignore next */ function PipelineRunContainer({ intl }) {
             runaction={rerunPipelineRun}
             showNotification={value => setShowRunActionNotification(value)}
           />
-        </>
+        </div>
       );
     } else {
       runAction = (
