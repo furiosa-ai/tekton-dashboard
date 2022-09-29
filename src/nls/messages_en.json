@@ -226,7 +226,7 @@
     "dashboard.stop.actionText": "Stop",
     "dashboard.stop.button": "Stop",
     "dashboard.stop.error": "An error occurred when stopping {runName}: check the dashboard logs for details. Status code: {statusCode}",
-    "dashboard.stop.triggered": "Triggered rerun",
+    "dashboard.stop.triggered": "Triggered stop",
     "dashboard.tableHeader.createdTime": "Created",
     "dashboard.tableHeader.default": "Default",
     "dashboard.tableHeader.duration": "Duration",
