@@ -1,5 +1,5 @@
 /*
-Copyright 2019-2021 The Tekton Authors
+Copyright 2019-2022 The Tekton Authors
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -18,6 +18,7 @@ import { Button, InlineNotification } from 'carbon-components-react';
 import {
   ALL_NAMESPACES,
   getErrorMessage,
+  resourceNameRegex,
   urls,
   useTitleSync
 } from '@tektoncd/dashboard-utils';
@@ -38,7 +39,7 @@ function validateInputs(value, id) {
       return false;
     }
 
-    if (/[^-a-z0-9]/.test(trimmed)) {
+    if (!resourceNameRegex.test(trimmed)) {
       return false;
     }
 
@@ -234,33 +235,6 @@ export /* istanbul ignore next */ function CreatePipelineResource({ intl }) {
             defaultMessage: 'Create PipelineResource'
           })}
         </h1>
-        <Button
-          iconDescription={intl.formatMessage({
-            id: 'dashboard.modal.cancelButton',
-            defaultMessage: 'Cancel'
-          })}
-          kind="secondary"
-          onClick={handleClose}
-          disabled={creating}
-        >
-          {intl.formatMessage({
-            id: 'dashboard.modal.cancelButton',
-            defaultMessage: 'Cancel'
-          })}
-        </Button>
-        <Button
-          iconDescription={intl.formatMessage({
-            id: 'dashboard.actions.createButton',
-            defaultMessage: 'Create'
-          })}
-          onClick={handleSubmit}
-          disabled={creating}
-        >
-          {intl.formatMessage({
-            id: 'dashboard.actions.createButton',
-            defaultMessage: 'Create'
-          })}
-        </Button>
       </div>
 
       <form>
@@ -297,6 +271,34 @@ export /* istanbul ignore next */ function CreatePipelineResource({ intl }) {
             invalidFields={invalidFields}
           />
         )}
+
+        <Button
+          iconDescription={intl.formatMessage({
+            id: 'dashboard.actions.createButton',
+            defaultMessage: 'Create'
+          })}
+          onClick={handleSubmit}
+          disabled={creating}
+        >
+          {intl.formatMessage({
+            id: 'dashboard.actions.createButton',
+            defaultMessage: 'Create'
+          })}
+        </Button>
+        <Button
+          iconDescription={intl.formatMessage({
+            id: 'dashboard.modal.cancelButton',
+            defaultMessage: 'Cancel'
+          })}
+          kind="secondary"
+          onClick={handleClose}
+          disabled={creating}
+        >
+          {intl.formatMessage({
+            id: 'dashboard.modal.cancelButton',
+            defaultMessage: 'Cancel'
+          })}
+        </Button>
       </form>
     </div>
   );

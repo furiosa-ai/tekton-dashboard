@@ -1,5 +1,5 @@
 /*
-Copyright 2019-2021 The Tekton Authors
+Copyright 2019-2022 The Tekton Authors
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -45,8 +45,6 @@ import {
   ClusterTasks,
   ClusterTriggerBinding,
   ClusterTriggerBindings,
-  Condition,
-  Conditions,
   CreatePipelineResource,
   CreatePipelineRun,
   CreateTaskRun,
@@ -64,6 +62,8 @@ import {
   Pipelines,
   ReadWriteRoute,
   ResourceList,
+  Run,
+  Runs,
   Settings,
   SideNav,
   TaskRun,
@@ -80,7 +80,6 @@ import {
 import {
   NamespaceContext,
   useExtensions,
-  useIsReadOnly,
   useLogoutURL,
   useNamespaces,
   useProperties,
@@ -157,7 +156,6 @@ export function App({ lang }) {
     isFetching: isFetchingProperties,
     isPlaceholderData: isPropertiesPlaceholder
   } = useProperties();
-  const isReadOnly = useIsReadOnly();
   const logoutURL = useLogoutURL();
   const tenantNamespace = useTenantNamespace();
 
@@ -240,18 +238,25 @@ export function App({ lang }) {
               >
                 <PageErrorBoundary>
                   <Switch>
-                    <Redirect exact from="/" to={urls.about()} />
+                    <Route
+                      path="/"
+                      exact
+                      render={() => <Redirect to={urls.about()} />}
+                    />
                     <Route path={paths.pipelines.all()} exact>
                       <Pipelines />
                     </Route>
                     <Route path={paths.pipelines.byNamespace()} exact>
                       <Pipelines />
                     </Route>
-                    <ReadWriteRoute
-                      isReadOnly={isReadOnly}
+                    <Route
                       path={paths.pipelineRuns.create()}
                       exact
-                      component={CreatePipelineRun}
+                      render={() => (
+                        <ReadWriteRoute>
+                          <CreatePipelineRun />
+                        </ReadWriteRoute>
+                      )}
                     />
                     <Route path={paths.pipelineRuns.all()}>
                       <PipelineRuns />
@@ -274,11 +279,14 @@ export function App({ lang }) {
                     <Route path={paths.pipelineResources.byName()} exact>
                       <PipelineResource />
                     </Route>
-                    <ReadWriteRoute
-                      isReadOnly={isReadOnly}
+                    <Route
                       path={paths.pipelineResources.create()}
                       exact
-                      component={CreatePipelineResource}
+                      render={() => (
+                        <ReadWriteRoute>
+                          <CreatePipelineResource />
+                        </ReadWriteRoute>
+                      )}
                     />
 
                     <Route path={paths.tasks.all()} exact>
@@ -287,11 +295,14 @@ export function App({ lang }) {
                     <Route path={paths.tasks.byNamespace()} exact>
                       <Tasks />
                     </Route>
-                    <ReadWriteRoute
-                      isReadOnly={isReadOnly}
+                    <Route
                       path={paths.taskRuns.create()}
                       exact
-                      component={CreateTaskRun}
+                      render={() => (
+                        <ReadWriteRoute>
+                          <CreateTaskRun />
+                        </ReadWriteRoute>
+                      )}
                     />
                     <Route path={paths.taskRuns.all()}>
                       <TaskRuns />
@@ -305,17 +316,19 @@ export function App({ lang }) {
                     <Route path={paths.taskRuns.byName()} exact>
                       <TaskRun />
                     </Route>
+
+                    <Route path={paths.runs.all()}>
+                      <Runs />
+                    </Route>
+                    <Route path={paths.runs.byNamespace()} exact>
+                      <Runs />
+                    </Route>
+                    <Route path={paths.runs.byName()} exact>
+                      <Run />
+                    </Route>
+
                     <Route path={paths.clusterTasks.all()} exact>
                       <ClusterTasks />
-                    </Route>
-                    <Route path={paths.conditions.all()}>
-                      <Conditions />
-                    </Route>
-                    <Route path={paths.conditions.byNamespace()} exact>
-                      <Conditions />
-                    </Route>
-                    <Route path={paths.conditions.byName()}>
-                      <Condition />
                     </Route>
 
                     <Route path={paths.about()}>
@@ -325,10 +338,13 @@ export function App({ lang }) {
                       <Settings />
                     </Route>
 
-                    <ReadWriteRoute
-                      isReadOnly={isReadOnly}
+                    <Route
                       path={paths.importResources()}
-                      component={ImportResources}
+                      render={() => (
+                        <ReadWriteRoute>
+                          <ImportResources />
+                        </ReadWriteRoute>
+                      )}
                     />
 
                     <Route path={paths.eventListeners.all()} exact>

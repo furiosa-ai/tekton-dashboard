@@ -15,6 +15,7 @@ This guide explains how to build, deploy and test the Tekton Dashboard. It cover
   - [Integration tests](#integration-tests)
 - [Run frontend tests](#run-frontend-tests)
   - [Frontend unit tests](#frontend-unit-tests)
+  - [Frontend E2E tests](#frontend-e2e-tests)
   - [Linter](#linter)
 - [i18n](#i18n)
 - [Storybook](#storybook)
@@ -31,9 +32,7 @@ You will also need the following tools in order to build the Dashboard locally a
 1. [Node.js & npm](https://nodejs.org/): For building and running the frontend locally. See `engines` in [package.json](../../package.json) for versions used. _Node.js 16.x is recommended_
 1. [`ko`](https://github.com/google/ko): For development. `ko` version v0.7.2 or higher is required for `dashboard` to work correctly
 1. [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/): For interacting with your kube cluster
-1. [`kustomize`](https://kubernetes-sigs.github.io/kustomize/installation/): For building the Dashboard manifests. v3.5.4 is recommended, the installer script is not currently compatible with v4
-
-   See [here](https://kubectl.docs.kubernetes.io/installation/kustomize/source/) - `GO111MODULE=on go install sigs.k8s.io/kustomize/kustomize/v3` works correctly
+1. [`kustomize`](https://kubectl.docs.kubernetes.io/installation/kustomize/): For building the Dashboard manifests. v4.5.4 is known to work
 
 ## Checkout your fork
 
@@ -166,14 +165,14 @@ To run integration tests you will need additonal tools:
 
 Integration tests are located in the [/test/e2e-tests.sh](../../test/e2e-tests.sh) script.
 
-To run the integration tests locally, you can use the [/test/local-e2e-tests.sh](../../test/local-e2e-tests.sh) script. It will create a fresh `kind` cluster, deploy a docker registry in it, run the integration tests script, and drop the test cluster automatically.
+To run the integration tests locally, you can use the [/test/e2e-tests-local.sh](../../test/e2e-tests-local.sh) script. It will create a fresh `kind` cluster, deploy a docker registry in it, run the integration tests script, and drop the test cluster automatically.
 
 ```bash
 export KO_DOCKER_REPO='ko.local'
 # or use an external repository
 # export KO_DOCKER_REPO='docker.io/myusername'
 
-./test/local-e2e-tests.sh
+./test/e2e-tests-local.sh
 ```
 
 **Note:** You can override the Tekton Pipelines and/or Triggers versions deployed in the test cluster by providing `PIPELINES_VERSION` and/or `TRIGGERS_VERSION` environment variables.
@@ -187,6 +186,18 @@ Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/) in inter
 Coverage threshold is set to 90%, if it falls below the threshold the test script will fail.
 
 Tests are defined in `*.test.js` files alongside the code under test.
+
+### Frontend E2E tests
+
+Run `npm run e2e` to execute the end-to-end UI tests via [Cypress](https://www.cypress.io/) in interactive mode.
+
+Tests are defined in `*.cy.js` files in `packages/e2e/cypress`.
+
+By default tests are run using Chrome but you can override this by specifying an alternative supported browser available on your system, for example:
+
+`npm run e2e -- -- --browser firefox`
+
+To find the list of supported browsers and versions on your system, run `npx cypress info`
 
 ### Linter
 
@@ -233,6 +244,4 @@ Try our [walk-throughs](../walkthrough/README.md) or learn about [extensions](..
 
 ---
 
-Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/).
-
-Code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0).
+Except as otherwise noted, the content of this page is licensed under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/). Code samples are licensed under the [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0).

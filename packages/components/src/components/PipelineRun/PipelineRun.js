@@ -32,6 +32,24 @@ import {
   TaskTree
 } from '..';
 
+function getPipelineTaskName({ pipelineRun, taskRunName }) {
+  const {
+    status: { childReferences, taskRuns }
+  } = pipelineRun;
+
+  if (taskRuns) {
+    return taskRuns[taskRunName]?.pipelineTaskName;
+  }
+
+  if (childReferences) {
+    const { pipelineTaskName } =
+      childReferences.find(({ name }) => name === taskRunName) || {};
+    return pipelineTaskName;
+  }
+
+  return undefined;
+}
+
 export /* istanbul ignore next */ class PipelineRunContainer extends Component {
   state = {
     isLogsMaximized: false
@@ -40,16 +58,20 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
   getPipelineRunError = () => {
     const { pipelineRun } = this.props;
 
-    if (!(pipelineRun.status && pipelineRun.status.taskRuns)) {
+    if (!pipelineRun.status?.taskRuns && !pipelineRun.status?.childReferences) {
       return null;
     }
 
     const {
-      status: { taskRuns: taskRunsStatus }
+      status: { childReferences, taskRuns: taskRunsStatus }
     } = pipelineRun;
     const { message, status, reason } = getStatus(pipelineRun);
 
-    return status === 'False' && !taskRunsStatus && { message, reason };
+    return (
+      status === 'False' &&
+      !taskRunsStatus &&
+      !childReferences && { message, reason }
+    );
   };
 
   getLogContainer({ stepName, stepStatus, taskRun }) {
@@ -111,7 +133,10 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
 
   loadTaskRuns = () => {
     const { intl, pipelineRun } = this.props;
-    if (!pipelineRun?.status?.taskRuns) {
+    if (
+      !pipelineRun?.status?.taskRuns &&
+      !pipelineRun?.status?.childReferences
+    ) {
       return [];
     }
 
@@ -135,10 +160,6 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
       return acc;
     }, []);
 
-    const {
-      status: { taskRuns: taskRunDetails }
-    } = pipelineRun;
-
     return taskRuns.map(taskRun => {
       const { labels, name: taskRunName, uid } = taskRun.metadata;
 
@@ -147,7 +168,10 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
       if (conditionCheck) {
         pipelineTaskName = conditionCheck;
       } else {
-        ({ pipelineTaskName } = taskRunDetails[taskRunName] || {});
+        pipelineTaskName = getPipelineTaskName({
+          pipelineRun,
+          taskRunName
+        });
       }
 
       const { podName } = taskRun.status || {};
@@ -186,12 +210,13 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
       customNotification,
       error,
       handleTaskSelected,
+      icon,
       intl,
       loading,
       onViewChange,
       pipelineRun,
       pod,
-      runaction,
+      runActions,
       selectedStepId,
       selectedTaskId,
       showIO,
@@ -257,6 +282,7 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
       return (
         <>
           <RunHeader
+            icon={icon}
             lastTransitionTime={lastTransitionTime}
             loading={loading}
             pipelineRun={pipelineRun}
@@ -314,6 +340,7 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
     return (
       <>
         <RunHeader
+          icon={icon}
           lastTransitionTime={lastTransitionTime}
           loading={loading}
           message={pipelineRunStatusMessage}
@@ -322,7 +349,7 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
           status={pipelineRunStatus}
           triggerHeader={triggerHeader}
         >
-          {runaction}
+          {runActions}
         </RunHeader>
         {customNotification}
         {taskRuns.length > 0 && (

@@ -21,23 +21,25 @@ import {
   taskRunHasWarning,
   urls
 } from '@tektoncd/dashboard-utils';
-import {
-  Link as CarbonLink,
-  ContentSwitcher,
-  Switch
-} from 'carbon-components-react';
+import { ContentSwitcher, Switch } from 'carbon-components-react';
 
 import {
+  Link as CustomLink,
   DetailsHeader,
   Param,
   ResourceTable,
   Tab,
   Table,
   Tabs,
-  ViewYAML
+  ViewYAML,
+  CustomLink as FCustomLink
 } from '..';
 
-function getDescriptions(array = []) {
+function getDescriptions(array) {
+  if (!array) {
+    return {};
+  }
+
   return array.reduce((accumulator, { name, description }) => {
     accumulator[name] = description;
     return accumulator;
@@ -54,7 +56,7 @@ function resourceTable(title, namespace, resources, intl) {
         value:
           resourceRef && resourceRef.name ? (
             <Link
-              component={CarbonLink}
+              component={CustomLink}
               to={urls.pipelineResources.byName({
                 namespace,
                 pipelineResourceName: resourceRef.name
@@ -201,7 +203,8 @@ const TaskRunDetails = ({
     resultsTable && 'results',
     resources && 'resources',
     'status',
-    pod && 'pod'
+    pod && 'pod',
+    pod && 'custom-link'
   ].filter(Boolean);
 
   let selectedTabIndex = tabs.indexOf(view);
@@ -310,6 +313,11 @@ const TaskRunDetails = ({
             </div>
           </Tab>
         )}
+        <Tab id={`${displayName}-custom-link`} label="CustomLink">
+          <div className="tkn--step-status">
+            <FCustomLink dark params={params} />
+          </div>
+        </Tab>
       </Tabs>
     </div>
   );

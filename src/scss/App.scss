@@ -26,6 +26,7 @@ limitations under the License.
 @import '../containers/SideNav/SideNav.scss';
 
 @import '@tektoncd/dashboard-components/src/scss/Run.scss';
+@import '@tektoncd/dashboard-components/src/components/Actions/Actions.scss';
 @import '@tektoncd/dashboard-components/src/components/DataTableSkeleton/DataTableSkeleton.scss';
 @import '@tektoncd/dashboard-components/src/components/DeleteModal/DeleteModal.scss';
 @import '@tektoncd/dashboard-components/src/components/DetailsHeader/DetailsHeader.scss';
@@ -40,7 +41,6 @@ limitations under the License.
 @import '@tektoncd/dashboard-components/src/components/Param/Param.scss';
 @import '@tektoncd/dashboard-components/src/components/PipelineRuns/PipelineRuns.scss';
 @import '@tektoncd/dashboard-components/src/components/ResourceTable/ResourceTable.scss';
-@import '@tektoncd/dashboard-components/src/components/RunAction/RunAction.scss';
 @import '@tektoncd/dashboard-components/src/components/RunHeader/RunHeader.scss';
 @import '@tektoncd/dashboard-components/src/components/Spinner/Spinner.scss';
 @import '@tektoncd/dashboard-components/src/components/StatusIcon/StatusIcon.scss';
@@ -136,4 +136,8 @@ a {
   .tkn--log {
     min-height: 100%;
   }
+}
+
+.bx--overflow-menu-options:after {
+  display: none;
 }

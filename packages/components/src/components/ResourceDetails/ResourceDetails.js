@@ -21,20 +21,21 @@ import { FormattedDate, Tab, Tabs, ViewYAML } from '..';
 const tabs = ['overview', 'yaml'];
 
 const ResourceDetails = ({
+  actions,
   additionalMetadata,
   children,
   error,
   intl,
   loading,
   onViewChange,
-  resource,
+  resource: originalResource,
   view
 }) => {
   if (loading) {
     return <SkeletonText heading width="60%" />;
   }
 
-  if (error || !resource) {
+  if (error || !originalResource) {
     return (
       <InlineNotification
         kind="error"
@@ -54,11 +55,19 @@ const ResourceDetails = ({
     selectedTabIndex = 0;
   }
 
-  const formattedLabels = formatLabels(resource.metadata.labels);
+  const formattedLabels = formatLabels(originalResource.metadata.labels);
+
+  const resource = { ...originalResource };
+  if (resource.metadata?.managedFields) {
+    delete resource.metadata.managedFields;
+  }
 
   return (
     <div className="tkn--resourcedetails">
-      <h1>{resource.metadata.name}</h1>
+      <div className="tkn--resourcedetails--header">
+        <h1>{resource.metadata.name}</h1>
+        {actions}
+      </div>
       <Tabs
         aria-label={intl.formatMessage({
           id: 'dashboard.resourceDetails.ariaLabel',
@@ -141,6 +150,7 @@ const ResourceDetails = ({
 };
 
 ResourceDetails.defaultProps = {
+  actions: null,
   additionalMetadata: null,
   children: null,
   error: null,
@@ -150,6 +160,7 @@ ResourceDetails.defaultProps = {
 };
 
 ResourceDetails.propTypes = {
+  actions: PropTypes.node,
   additionalMetadata: PropTypes.node,
   children: PropTypes.node,
   error: PropTypes.oneOfType([PropTypes.string, PropTypes.shape({})]),

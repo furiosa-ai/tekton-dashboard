@@ -1,5 +1,5 @@
 /*
-Copyright 2021 The Tekton Authors
+Copyright 2021-2022 The Tekton Authors
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -15,11 +15,38 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { getFilters, urls, useTitleSync } from '@tektoncd/dashboard-utils';
-import { FormattedDate, Table } from '@tektoncd/dashboard-components';
-import { Link as CarbonLink } from 'carbon-components-react';
+import {
+  Link as CustomLink,
+  FormattedDate,
+  Table
+} from '@tektoncd/dashboard-components';
 
 import { ListPageLayout } from '..';
 import { useClusterInterceptors } from '../../api';
+
+function getFormattedResources(resources) {
+  return resources.map(clusterInterceptor => ({
+    id: clusterInterceptor.metadata.uid,
+    name: (
+      <Link
+        component={CustomLink}
+        to={urls.rawCRD.cluster({
+          name: clusterInterceptor.metadata.name,
+          type: 'clusterinterceptors'
+        })}
+        title={clusterInterceptor.metadata.name}
+      >
+        {clusterInterceptor.metadata.name}
+      </Link>
+    ),
+    createdTime: (
+      <FormattedDate
+        date={clusterInterceptor.metadata.creationTimestamp}
+        relative
+      />
+    )
+  }));
+}
 
 function ClusterInterceptors({ intl }) {
   const location = useLocation();
@@ -67,56 +94,35 @@ function ClusterInterceptors({ intl }) {
     }
   ];
 
-  const clusterInterceptorsFormatted = clusterInterceptors.map(
-    clusterInterceptor => ({
-      id: clusterInterceptor.metadata.uid,
-      name: (
-        <Link
-          component={CarbonLink}
-          to={urls.rawCRD.cluster({
-            name: clusterInterceptor.metadata.name,
-            type: 'clusterinterceptors'
-          })}
-          title={clusterInterceptor.metadata.name}
-        >
-          {clusterInterceptor.metadata.name}
-        </Link>
-      ),
-      createdTime: (
-        <FormattedDate
-          date={clusterInterceptor.metadata.creationTimestamp}
-          relative
-        />
-      )
-    })
-  );
-
   return (
     <ListPageLayout
       error={getError()}
       filters={filters}
       hideNamespacesDropdown
+      resources={clusterInterceptors}
       title="ClusterInterceptors"
     >
-      <Table
-        headers={headers}
-        rows={clusterInterceptorsFormatted}
-        loading={isLoading}
-        emptyTextAllNamespaces={intl.formatMessage(
-          {
-            id: 'dashboard.emptyState.clusterResource',
-            defaultMessage: 'No matching {kind} found'
-          },
-          { kind: 'ClusterInterceptors' }
-        )}
-        emptyTextSelectedNamespace={intl.formatMessage(
-          {
-            id: 'dashboard.emptyState.clusterResource',
-            defaultMessage: 'No matching {kind} found'
-          },
-          { kind: 'ClusterInterceptors' }
-        )}
-      />
+      {({ resources }) => (
+        <Table
+          headers={headers}
+          rows={getFormattedResources(resources)}
+          loading={isLoading}
+          emptyTextAllNamespaces={intl.formatMessage(
+            {
+              id: 'dashboard.emptyState.clusterResource',
+              defaultMessage: 'No matching {kind} found'
+            },
+            { kind: 'ClusterInterceptors' }
+          )}
+          emptyTextSelectedNamespace={intl.formatMessage(
+            {
+              id: 'dashboard.emptyState.clusterResource',
+              defaultMessage: 'No matching {kind} found'
+            },
+            { kind: 'ClusterInterceptors' }
+          )}
+        />
+      )}
     </ListPageLayout>
   );
 }

@@ -117,6 +117,7 @@ const Table = props => {
     emptyTextAllNamespaces,
     emptyTextSelectedNamespace,
     filters,
+    hasDetails,
     headers: dataHeaders,
     id,
     intl,
@@ -124,12 +125,11 @@ const Table = props => {
     loading,
     rows: dataRows,
     selectedNamespace,
-    size,
+    size = hasDetails ? 'xl' : undefined,
     skeletonRowCount,
     title,
     toolbarButtons
   } = props;
-
   const shouldRenderBatchActions = !!(
     dataRows.length && batchActionButtons.length
   );
@@ -139,6 +139,7 @@ const Table = props => {
     filters || toolbarButtons.length || shouldRenderBatchActions;
 
   const tableClassNames = classNames('tkn--table', className, {
+    'tkn--table-with-details': hasDetails,
     'tkn--table-with-filters': filters
   });
 
@@ -172,6 +173,9 @@ const Table = props => {
                   >
                     {batchActionButtons.map(button => (
                       <TableBatchAction
+                        tabIndex={
+                          getBatchActionProps().shouldShowBatchActions ? 0 : -1
+                        }
                         renderIcon={button.icon}
                         key={`${button.text}Button`}
                         onClick={() => {
@@ -187,14 +191,15 @@ const Table = props => {
                   </TableBatchActions>
                 )}
                 <TableToolbarContent>
-                  {toolbarButtons.map(button => (
+                  {toolbarButtons.map(({ icon, onClick, text, ...rest }) => (
                     <Button
                       disabled={loading}
-                      onClick={button.onClick}
-                      renderIcon={button.icon}
-                      key={`${button.text}Button`}
+                      key={`${text}Button`}
+                      onClick={onClick}
+                      renderIcon={icon}
+                      {...rest}
                     >
-                      {button.text}
+                      {text}
                     </Button>
                   ))}
                 </TableToolbarContent>

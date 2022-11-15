@@ -1,5 +1,5 @@
 /*
-Copyright 2019-2021 The Tekton Authors
+Copyright 2019-2022 The Tekton Authors
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -61,10 +61,8 @@ export function usePipelineRun(params, queryConfig) {
   });
 }
 
-export function cancelPipelineRun({ name, namespace }) {
-  const payload = [
-    { op: 'replace', path: '/spec/status', value: 'PipelineRunCancelled' }
-  ];
+export function cancelPipelineRun({ name, namespace, status = 'Cancelled' }) {
+  const payload = [{ op: 'replace', path: '/spec/status', value: status }];
 
   const uri = getTektonAPI('pipelineruns', { name, namespace });
   return patch(uri, payload);
@@ -76,15 +74,16 @@ export function deletePipelineRun({ name, namespace }) {
 }
 
 export function createPipelineRun({
-  namespace,
-  pipelineName,
-  resources,
-  params,
-  pipelinePendingStatus,
-  serviceAccount,
-  timeout,
   labels,
-  nodeSelector
+  namespace,
+  nodeSelector,
+  params,
+  pipelineName,
+  pipelinePendingStatus,
+  pipelineRunName = `${pipelineName}-run-${Date.now()}`,
+  resources,
+  serviceAccount,
+  timeout
 }) {
   // Create PipelineRun payload
   // expect params and resources to be objects with keys 'name' and values 'value'
@@ -92,7 +91,7 @@ export function createPipelineRun({
     apiVersion: 'tekton.dev/v1beta1',
     kind: 'PipelineRun',
     metadata: {
-      name: `${pipelineName}-run-${Date.now()}`,
+      name: pipelineRunName,
       labels
     },
     spec: {
@@ -134,7 +133,7 @@ export function rerunPipelineRun(pipelineRun) {
     generateName: getGenerateNamePrefixForRerun(name),
     labels: {
       ...labels,
-      reruns: name
+      'dashboard.tekton.dev/rerunOf': name
     },
     namespace
   };

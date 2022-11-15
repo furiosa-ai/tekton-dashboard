@@ -12,6 +12,7 @@ limitations under the License.
 */
 /* istanbul ignore file */
 
+export { default as Actions } from './Actions';
 export { default as DataTableSkeleton } from './DataTableSkeleton';
 export { default as DetailsHeader } from './DetailsHeader';
 export { default as DeleteModal } from './DeleteModal';
@@ -22,6 +23,7 @@ export { default as FormattedDuration } from './FormattedDuration';
 export { default as Header } from './Header';
 export { default as KeyValueList } from './KeyValueList';
 export { default as LabelFilter } from './LabelFilter';
+export { default as Link } from './Link';
 export { default as LoadingShell } from './LoadingShell';
 export { default as Log } from './Log';
 export { default as LogFormat } from './LogFormat';
@@ -34,10 +36,8 @@ export { default as PipelineResources } from './PipelineResources';
 export { default as PipelineRun } from './PipelineRun';
 export { default as PipelineRuns } from './PipelineRuns';
 export { default as Portal } from './Portal';
-export { default as RunAction } from './RunAction';
 export { default as ResourceDetails } from './ResourceDetails';
 export { default as ResourceTable } from './ResourceTable';
-export { default as RunDropdown } from './RunDropdown';
 export { default as RunHeader } from './RunHeader';
 export { default as Spinner } from './Spinner';
 export { default as StatusFilterDropdown } from './StatusFilterDropdown';
@@ -56,3 +56,4 @@ export { default as TaskTree } from './TaskTree';
 export { default as TooltipDropdown } from './TooltipDropdown';
 export { default as Trigger } from './Trigger';
 export { default as ViewYAML } from './ViewYAML';
+export { default as CustomLink } from './CustomLink';

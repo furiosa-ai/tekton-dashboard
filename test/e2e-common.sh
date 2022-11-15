@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright 2018-2021 The Tekton Authors
+# Copyright 2018-2022 The Tekton Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ function print_diagnostic_info() {
 function install_kustomize() {
   if ! type "kustomize" > /dev/null; then
     echo ">> Installing kustomize"
-    tar=kustomize_v3.6.1_linux_amd64.tar.gz
-    curl -s -O -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.6.1/$tar
+    tar=kustomize_v4.5.4_linux_amd64.tar.gz
+    curl -s -O -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v4.5.4/$tar
     tar xzf ./$tar
 
     cp ./kustomize /usr/local/bin
@@ -45,7 +45,7 @@ function install_pipelines() {
   echo ">> Deploying Tekton Pipelines ($version)"
   kubectl apply --filename "https://github.com/tektoncd/pipeline/releases/download/$version/release.yaml" || fail_test "Tekton Pipelines installation failed"
 
-  # Make sure thateveything is cleaned up in the current namespace.
+  # Make sure that everything is cleaned up in the current namespace.
   for res in pipelineresources tasks pipelines taskruns pipelineruns; do
     kubectl delete --ignore-not-found=true ${res}.tekton.dev --all
   done
@@ -62,20 +62,6 @@ function install_triggers() {
 
   # Wait for pods to be running in the namespaces we are deploying to
   wait_until_pods_running tekton-pipelines || fail_test "Tekton Triggers did not come up"
-}
-
-function uninstall_pipelines() {
-  local version=$1
-
-  echo ">> Deleting Tekton Pipelines ($version)"
-  kubectl delete --filename "https://github.com/tektoncd/pipeline/releases/download/$version/release.yaml" || fail_test "Tekton Pipelines deletion failed"
-}
-
-function uninstall_triggers() {
-  local version=$1
-
-  echo ">> Deleting Tekton Triggers ($version)"
-  kubectl delete --filename "https://github.com/tektoncd/triggers/releases/download/$version/release.yaml" || fail_test "Tekton Triggers deletion failed"
 }
 
 # Called by `fail_test` (provided by `e2e-tests.sh`) to dump info on test failure
@@ -147,7 +133,7 @@ function curl_envsubst_resource() {
     exit 1
   fi
   set -x
-  cat "$1" | envsubst | curl -sS -X "$2" --data-binary @- -H "Content-Type: application/yaml" "$3" -H "Tekton-Client: tektoncd/dashboard"
+  cat "$1" | envsubst | curl -sS -X "$2" --data-binary @- -H "Content-Type: application/yaml" "$3" -H "Tekton-Client: tektoncd/dashboard-e2e"
   set +x
 }
 
