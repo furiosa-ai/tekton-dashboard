@@ -32,7 +32,7 @@ import {
   Table,
   Tabs,
   ViewYAML,
-  CustomLink
+  CustomLink as FCustomLink
 } from '..';
 
 function getDescriptions(array) {
@@ -315,7 +315,7 @@ const TaskRunDetails = ({
         )}
         <Tab id={`${displayName}-custom-link`} label="CustomLink">
           <div className="tkn--step-status">
-            <CustomLink dark params={params} />
+            <FCustomLink dark params={params} />
           </div>
         </Tab>
       </Tabs>
